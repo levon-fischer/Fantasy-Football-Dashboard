@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import streamlit as st
 
 league_ids = {'2020': '599772937209298944', '2021': '725924134428712960', '2022': '784428347810816000'}
 
@@ -20,12 +21,25 @@ def main():
         rosters = pd.concat([rosters, new_rosters], ignore_index=True)
         trades = pd.concat([trades, new_trades], ignore_index=True)
 
-    print(rosters)
-    print(users)
-    print(trades.head())
+
+    st.write(rosters)
+    st.write(users)
+    st.write(trades.head())
+
+# -----Classes----------------------------------------------------------------------------------------------------------
+
+class GM:
+    num_of_gms = 0
+
+    def __init__(self, user_id, user_name):
+        self.id = user_id
+        self.user_name = user_name
+
+        GM.num_of_gms += 1
 
 
-# -----Functions---------------------------------------------------------------------------------------------------------
+# -----Functions--------------------------------------------------------------------------------------------------------
+@st.cache
 def get_users(year):
     users_response = requests.get('https://api.sleeper.app/v1/league/' + league_ids[year] + '/users').json()
 
@@ -40,6 +54,7 @@ def get_users(year):
     return users_df
 
 
+@st.cache
 def get_rosters(year):
     rosters_response = requests.get('https://api.sleeper.app/v1/league/' + league_ids[year] + '/rosters').json()
     roster_list = []
@@ -50,6 +65,7 @@ def get_rosters(year):
     return rosters_df
 
 
+@st.cache
 def get_trades(year):
     week = 1
     trade_list = []
@@ -67,6 +83,7 @@ def get_trades(year):
     return trades_df
 
 
+@st.cache
 def get_matchups(year):
     week = 1
     matchup_list = []
